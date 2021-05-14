@@ -52,7 +52,7 @@
               "entryPoints": [
                 {
                   "html": "./src/renderer/index.html",
-                  "js": "./src/renderer/index.ts",
+                  "js": "./src/renderer/index.tsx",
                   "name": "main_window"
                 }
               ]
@@ -70,22 +70,37 @@
     "@electron-forge/maker-zip": "^6.0.0-beta.54",
     "@electron-forge/plugin-webpack": "6.0.0-beta.54",
     "@marshallofsound/webpack-asset-relocator-loader": "^0.5.0",
+    "@types/node": "^15.0.3",
+    "@types/react": "^17.0.5",
+    "@types/react-dom": "^17.0.5",
     "@typescript-eslint/eslint-plugin": "^4.0.1",
     "@typescript-eslint/parser": "^4.0.1",
+    "babel-eslint": "^10.0.0",
     "css-loader": "^4.2.1",
     "electron": "12.0.7",
     "eslint": "^7.6.0",
     "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-import": "^2.20.0",
+    "eslint-config-react-app": "^6.0.0",
+    "eslint-plugin-flowtype": "^5.2.0",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-jsx-a11y": "^6.3.1",
     "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-react": "^7.20.3",
+    "eslint-plugin-react-hooks": "^4.0.8",
     "fork-ts-checker-webpack-plugin": "^5.0.14",
     "node-loader": "^1.0.1",
+    "node-sass": "^6.0.0",
     "prettier": "^2.3.0",
+    "sass-loader": "^10.2.0",
     "style-loader": "^1.2.1",
     "ts-loader": "^8.0.2",
     "typescript": "^4.0.2"
   },
   "dependencies": {
-    "electron-squirrel-startup": "^1.0.0"
+    "electron-log": "^4.3.5",
+    "electron-squirrel-startup": "^1.0.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "tree-kill": "^1.2.2"
   }
 }
