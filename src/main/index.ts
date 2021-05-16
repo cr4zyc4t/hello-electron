@@ -1,5 +1,11 @@
 import { app, BrowserWindow } from "electron";
+import ElectronLog from "electron-log";
+import fixPath from "fix-path";
 import appMain from "./app-main";
+
+fixPath();
+
+Object.assign(console, ElectronLog.functions);
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: any;
 

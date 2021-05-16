@@ -2,50 +2,54 @@ import { app, BrowserWindow, ipcMain } from "electron";
 import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 import path from "path";
 import treeKill from "tree-kill";
-import ElectronLog from "electron-log";
-
-Object.assign(console, ElectronLog.functions);
 
 export default function appMain(mainWindow: BrowserWindow): void {
-  // setInterval(() => {
-  //   mainWindow.webContents.send("log", { time: Date.now() });
-  // }, 1000);
-  const sendLog = (log: string) => mainWindow.webContents.send("stdout", log);
+  const sendMsg = (eventName: string, msg?: string) => {
+    if (!mainWindow.webContents.isDestroyed()) {
+      mainWindow.webContents.send(eventName, msg);
+    }
+  };
 
   let proc: ChildProcessWithoutNullStreams;
 
   ipcMain.handle("execute", (event) => {
     if (proc && proc.pid) {
       console.log("ToanVQ ~ file: app-main.ts ~ line 16 ~ ipcMain.handle ~ proc.pid", proc.pid);
-      treeKill(proc.pid, "SIGINT");
+      treeKill(proc.pid, "SIGTERM");
     }
     return new Promise<void>((resolve, reject) => {
-      proc = spawn("node", [path.join(app.getAppPath(), "assets/complex_program.js")]);
+      const exePath = app.isPackaged
+        ? path.join(process.resourcesPath, "assets/complex_program.js")
+        : path.join(app.getAppPath(), "assets/complex_program.js");
+      console.log("defaultfunctionappMain -> exePath", exePath);
+      proc = spawn("node", [exePath]);
       proc.stdout.on("data", (data) => {
         const textDecoder = new TextDecoder();
-        sendLog(textDecoder.decode(data));
+        sendMsg("stdout", textDecoder.decode(data));
       });
       proc.stdout.on("error", (error) => {
         console.log("ToanVQ ~ file: app-main.ts ~ line 25 ~ proc.stdout.on ~ error", error);
-        sendLog(error.stack);
+        sendMsg("stdout", error.stack);
       });
       proc.on("error", (error) => {
         console.log("ToanVQ ~ file: app-main.ts ~ line 33 ~ proc.on ~ error", error);
         reject(error);
       });
       proc.on("exit", (code, signal) => {
-        sendLog(`Exit code ${code} ${signal}`);
-        mainWindow.webContents.send("proc-exit");
+        if (signal === "SIGINT") {
+          return;
+        }
+        sendMsg("stdout", `Exit code ${code} ${signal}`);
+        sendMsg("proc-exit");
       });
       resolve();
     })
       .then(() => {
         return { status: true };
       })
-      .catch((error) => {
-        console.log("ToanVQ ~ file: app-main.ts ~ line 45 ~ ipcMain.handle ~ error", error);
-        sendLog(error.stack);
-        mainWindow.webContents.send("proc-exit");
+      .catch((error: Error) => {
+        sendMsg("stdout", error.stack);
+        sendMsg("proc-exit");
         return { status: false };
       });
   });
@@ -54,8 +58,15 @@ export default function appMain(mainWindow: BrowserWindow): void {
       console.log(
         "ToanVQ ~ file: app-main.ts ~ line 47 ~ ipcMain.on ~ treeKill(proc.pid)",
         proc.pid,
-        treeKill(proc.pid, "SIGINT")
+        treeKill(proc.pid, "SIGTERM")
       );
+    }
+  });
+
+  mainWindow.on("close", () => {
+    if (proc && proc.pid) {
+      console.log("defaultfunctionappMain -> proc && proc.pid", proc && proc.pid);
+      treeKill(proc.pid, "SIGINT");
     }
   });
 }

@@ -19,7 +19,11 @@
   "license": "MIT",
   "config": {
     "forge": {
-      "packagerConfig": {},
+      "packagerConfig": {
+        "extraResource": [
+          "assets"
+        ]
+      },
       "makers": [
         {
           "name": "@electron-forge/maker-squirrel",
@@ -99,6 +103,7 @@
   "dependencies": {
     "electron-log": "^4.3.5",
     "electron-squirrel-startup": "^1.0.0",
+    "fix-path": "^3.0.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "tree-kill": "^1.2.2"
