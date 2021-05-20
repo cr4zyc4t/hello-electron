@@ -6,10 +6,10 @@ export interface LogViewerProps {
 }
 
 export default function LogViewer({ log }: LogViewerProps) {
-  const containerRef = useRef();
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const container: HTMLDivElement = containerRef.current;
+    const container = containerRef.current!;
     container.scrollTop = container.scrollHeight;
   }, [log]);
 

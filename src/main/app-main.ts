@@ -68,5 +68,7 @@ export default function appMain(mainWindow: BrowserWindow): void {
       console.log("defaultfunctionappMain -> proc && proc.pid", proc && proc.pid);
       treeKill(proc.pid, "SIGINT");
     }
+    ipcMain.removeHandler("execute");
+    ipcMain.removeHandler("stop-proc");
   });
 }

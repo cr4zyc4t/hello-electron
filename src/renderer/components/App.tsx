@@ -1,6 +1,7 @@
-import { ipcRenderer, IpcRendererEvent } from "electron";
+import type { IpcRendererEvent } from "electron";
 import React, { useCallback, useEffect, useState } from "react";
 import "./App.scss";
+import Counter from "./Counter";
 import LogViewer from "./LogViewer";
 
 export default function App() {
@@ -10,14 +11,13 @@ export default function App() {
 
   const onButtonClicked = useCallback(() => {
     if (running) {
-      console.log("ToanVQ ~ file: App.tsx ~ line 13 ~ onButtonClicked ~ running", running);
-      return ipcRenderer.send("stop-proc");
+      setProcessing(true);
+      return window.preloadAPI.send("stop-proc");
     }
     setProcessing(true);
-    ipcRenderer
+    window.preloadAPI
       .invoke("execute")
       .then((response) => {
-        console.log("ToanVQ ~ file: App.tsx ~ line 11 ~ .then ~ response", response);
         setRunning(response.status);
       })
       .catch(console.log)
@@ -37,17 +37,19 @@ export default function App() {
     const handleExit = (event: IpcRendererEvent) => {
       setRunning(false);
       setLog("");
+      setProcessing(false);
     };
-    ipcRenderer.on("stdout", handleStdout);
-    ipcRenderer.on("proc-exit", handleExit);
+    window.preloadAPI.on("stdout", handleStdout);
+    window.preloadAPI.on("proc-exit", handleExit);
+
     return () => {
-      ipcRenderer.removeListener("stdout", handleStdout);
-      ipcRenderer.removeListener("proc-exit", handleExit);
+      window.preloadAPI.off("stdout", handleStdout);
+      window.preloadAPI.off("proc-exit", handleExit);
     };
   }, [appendLog, running]);
 
   useEffect(() => {
-    ipcRenderer.send("stop-proc");
+    window.preloadAPI.send("stop-proc");
   }, []);
 
   return (
@@ -55,6 +57,7 @@ export default function App() {
       <button className="start-btn" disabled={processing} onClick={onButtonClicked}>
         {running ? "Stop" : "Run"}
       </button>
+      <Counter />
 
       <LogViewer log={log} />
     </div>

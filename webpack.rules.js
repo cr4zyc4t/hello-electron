@@ -15,12 +15,13 @@ module.exports = [
     },
   },
   {
-    test: /\.tsx?$/,
+    test: /\.(js|jsx|ts|tsx)?$/,
     exclude: /(node_modules|\.webpack)/,
     use: {
-      loader: "ts-loader",
+      loader: "babel-loader",
       options: {
-        transpileOnly: true,
+        presets: ["@babel/react", "@babel/typescript"],
+        plugins: [["@babel/plugin-proposal-class-properties", { loose: true }], "styled-jsx/babel"],
       },
     },
   },
